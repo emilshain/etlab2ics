@@ -1,6 +1,6 @@
 {
   "name": "etlab2ics",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Publishes the ETLab student portal calendar as a local iCalendar feed for Thunderbird and other calendar apps.",
   "type": "module",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node calendar-bridge.mjs",
-    "test": "node test/ics.test.mjs",
+    "test": "node test/ics.test.mjs && node test/http.test.mjs",
     "install:autostart": "node scripts/install-autostart.mjs"
   }
 }

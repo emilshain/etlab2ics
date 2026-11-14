@@ -19,6 +19,7 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { toIcs } from './src/ics.js';
 
 const PORT = Number(process.env.BRIDGE_PORT || 8787);
@@ -108,7 +109,7 @@ async function fetchMonth(session, { month, year }) {
 async function refresh() {
   const session = state.session || loadSession();
   if (!session || !session.token) {
-    state.lastError = 'no session - press "Connect calendar" in the extension';
+    state.lastError = 'no session - open /setup and paste your session token';
     return;
   }
   state.session = session;
@@ -267,9 +268,21 @@ async function handle(req, res) {
     if (!state.ics) {
       return send(res, 503, `No calendar yet. Open http://127.0.0.1:${PORT}/setup and paste your session token.`);
     }
+    // A stable ETag lets a client skip re-downloading an unchanged feed.
+    const etag = `"${createHash('sha1').update(state.ics).digest('hex').slice(0, 16)}"`;
+    const cacheHeaders = {
+      'Cache-Control': 'no-cache',
+      ETag: etag,
+      'X-PUBLISHED-TTL': 'PT30M',
+      'REFRESH-INTERVAL': 'PT30M'
+    };
+    if (req.headers['if-none-match'] === etag) {
+      return send(res, 304, '', 'text/calendar; charset=utf-8', cacheHeaders);
+    }
     return send(res, 200, state.ics, 'text/calendar; charset=utf-8', {
       'Content-Disposition': 'inline; filename="etlab.ics"',
-      'X-Event-Count': String(state.events.length)
+      'X-Event-Count': String(state.events.length),
+      ...cacheHeaders
     });
   }
 
