@@ -157,6 +157,17 @@ try {
     assert.equal(second.status, 304);
   });
 
+  await test('?download=1 is served as a file attachment', async () => {
+    const res = await fetch(base + '/etlab.ics?download=1');
+    assert.equal(res.status, 200);
+    assert.match(res.headers.get('content-disposition') || '', /attachment/);
+  });
+
+  await test('the plain feed stays inline for subscriptions', async () => {
+    const res = await fetch(base + '/etlab.ics');
+    assert.match(res.headers.get('content-disposition') || '', /inline/);
+  });
+
   await test('unknown routes return 404', async () => {
     const res = await fetch(base + '/nope');
     assert.equal(res.status, 404);

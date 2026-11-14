@@ -51,7 +51,9 @@ test('all-day event with exclusive end date', () => {
   assert.match(ics, /DTEND;VALUE=DATE:20261102/, 'DTEND is the next day for all-day events');
   assert.match(ics, /SUMMARY:SPOOKATHON/);
   assert.match(ics, /UID:etlab-2165@students\.etlab\.app/);
-  assert.match(ics, /DTSTAMP:20261113T103000Z/);
+  // DTSTAMP is the event's revision time. It used to be the fetch time, which
+  // made the whole feed differ on every refresh; the sample is dated 2026-11-01.
+  assert.match(ics, /DTSTAMP:20261101T000000Z/);
 });
 
 test('month rollover works for the last day of a month', () => {

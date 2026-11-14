@@ -60,10 +60,18 @@ export function eventToVevent(event, now = new Date()) {
   if (!start || !event.title) return null;
 
   const uid = `etlab-${event.id != null ? event.id : start + '-' + event.title}` + '@students.etlab.app';
+
+  // DTSTAMP means "when this event was last revised". Using the fetch time would
+  // make the whole feed differ on every refresh - new ETag, full re-download,
+  // and clients that treat DTSTAMP as a change signal would re-merge events.
+  // An event's own date is stable and changes only when the entry does.
+  const revised = new Date(String(event.date).slice(0, 10) + 'T00:00:00Z');
+  const dtstamp = Number.isNaN(revised.getTime()) ? stamp(now) : stamp(revised);
+
   const lines = [
     'BEGIN:VEVENT',
     `UID:${icsEscape(uid)}`,
-    `DTSTAMP:${stamp(now)}`,
+    `DTSTAMP:${dtstamp}`,
     `DTSTART;VALUE=DATE:${start}`,
     `DTEND;VALUE=DATE:${event.endDate ? dateOnly(event.endDate) : nextDay(event.date)}`,
     `SUMMARY:${icsEscape(event.title)}`,

@@ -285,8 +285,11 @@ async function handle(req, res) {
     if (req.headers['if-none-match'] === etag) {
       return send(res, 304, '', 'text/calendar; charset=utf-8', cacheHeaders);
     }
+    // ?download=1 is for phones and cloud calendars, which can never reach
+    // 127.0.0.1 from their own side and must import the file instead.
+    const wantsFile = url.searchParams.get('download') === '1';
     return send(res, 200, state.ics, 'text/calendar; charset=utf-8', {
-      'Content-Disposition': 'inline; filename="etlab.ics"',
+      'Content-Disposition': `${wantsFile ? 'attachment' : 'inline'}; filename="etlab.ics"`,
       'X-Event-Count': String(state.events.length),
       ...cacheHeaders
     });
