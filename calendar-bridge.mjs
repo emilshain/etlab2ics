@@ -207,7 +207,7 @@ background:#24405e;color:#fff;cursor:pointer}
 code,pre{background:#f4f6f9;border-radius:4px}code{padding:2px 5px}pre{padding:8px;overflow:auto}
 .err{color:#a3232b;font-weight:600}li{margin:6px 0}</style></head><body>
 <h1>Connect your ETLab calendar</h1>
-${error ? `<p class="err">${error}</p>` : ''}
+${error ? `<p class="err">${escapeHtml(error)}</p>` : ''}
 <ol>
 <li>Log in at <code>students.etlab.app</code>.</li>
 <li>Press <b>F12</b> &rarr; <b>Console</b> and run:<pre>copy(localStorage.access_token)
@@ -224,6 +224,26 @@ copy(JSON.parse(localStorage.user_data).institute_id)</pre></li>
 <p>Stored only in <code>.etlab-session.json</code> on this machine.</p>
 </body></html>`;
 }
+
+/* Any website can POST a form to 127.0.0.1 without a CORS preflight, so only
+ * accept session changes that originated from this page itself. Non-browser
+ * clients (curl, scripts) send neither header and are still allowed. */
+function fromThisPage(req) {
+  const site = req.headers['sec-fetch-site'];
+  if (site && site !== 'same-origin' && site !== 'none') return false;
+
+  const origin = req.headers.origin;
+  if (origin && origin !== `http://127.0.0.1:${PORT}` && origin !== `http://localhost:${PORT}`) {
+    return false;
+  }
+  return true;
+}
+
+const escapeHtml = (value) =>
+  String(value).replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+  );
 
 async function handle(req, res) {
   const url = new URL(req.url, `http://127.0.0.1:${PORT}`);
@@ -254,10 +274,14 @@ async function handle(req, res) {
   }
 
   if (url.pathname === '/setup') {
-    return send(res, 200, setupPage(), 'text/html; charset=utf-8');
+    return send(res, 200, setupPage(), 'text/html; charset=utf-8', {
+      'Cache-Control': 'no-store'
+    });
   }
 
   if (url.pathname === '/api/session' && req.method === 'POST') {
+    if (!fromThisPage(req)) return send(res, 403, 'cross-site request refused');
+
     let body = '';
     for await (const chunk of req) body += chunk;
     const isForm = (req.headers['content-type'] || '').includes('x-www-form-urlencoded');
