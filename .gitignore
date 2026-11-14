@@ -1,0 +1,13 @@
+node_modules/
+npm-debug.log*
+
+# Your portal session and cached events - never commit these.
+.etlab-session.json
+.etlab-cache.json
+.bridge.log
+.bridge.log.old
+
+# Local browser profile used by the optional dev scripts.
+.tmp-cal/
+.cal-profile/
+.edge.pid
