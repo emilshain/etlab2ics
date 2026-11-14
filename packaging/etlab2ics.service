@@ -1,0 +1,17 @@
+# Linux: systemd user unit.
+#   mkdir -p ~/.config/systemd/user
+#   cp packaging/etlab2ics.service ~/.config/systemd/user/
+#   edit WorkingDirectory/ExecStart, then:
+#   systemctl --user enable --now etlab2ics
+[Unit]
+Description=ETLab2ICS calendar bridge
+Documentation=https://github.com/emilshain/etlab2ics
+
+[Service]
+WorkingDirectory=%h/etlab2ics
+ExecStart=/usr/bin/node calendar-bridge.mjs
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=default.target

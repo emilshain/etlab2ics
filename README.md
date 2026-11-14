@@ -65,8 +65,14 @@ scope here and weakens the security model.
 **Subscribe (Apple Calendar, macOS):** *File → New Calendar Subscription →* paste
 the URL → set "Refresh every" to 30 minutes.
 
-**Import anywhere:** open `http://127.0.0.1:8787/etlab.ics` in a browser **on this
-computer**, save it as `etlab.ics`, then import that file where you want it:
+**Import anywhere:** open this in a browser **on this computer** and it downloads
+a real file (the `?download=1` route sends it as an attachment):
+
+```
+http://127.0.0.1:8787/etlab.ics?download=1
+```
+
+Then import that `etlab.ics` where you want it:
 
 | Where | How |
 | --- | --- |
@@ -149,6 +155,8 @@ It starts the bridge with no console window and restarts it if it exits
 (verified: killing the process brings it back in ~15 s). It records your current
 folder and Node path, so **re-run it if you move this folder**. Undo with
 `npm run install:autostart -- --remove`.
+
+Templates for the two files below live in [`packaging/`](packaging).
 
 ### macOS (launchd)
 
