@@ -158,7 +158,9 @@ returning `[{id, title, description, date, type, is_holiday}]`.
   `DATE` values, CRLF line endings and RFC 5545 folding at 75 octets.
 - The supervisor restarts the process after a kill; a duplicate instance exits
   cleanly.
-- 8 unit tests (`npm test`) cover ICS generation and escaping.
+- 18 tests (`npm test`): 8 unit tests cover ICS generation and escaping, and 10
+  end-to-end HTTP tests start a real server on a spare port to check the
+  cross-site guard (403), the ETag/304 path, the empty-feed 503 and routing.
 
 **Not verified:** importing the feed into a real Thunderbird profile, and the
 `/setup` form path end-to-end (added when the calendar code was split out of the
