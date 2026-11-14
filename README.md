@@ -49,7 +49,7 @@ scope here and weakens the security model.
 | --- | --- | --- | --- |
 | Thunderbird | Win/mac/Linux | ✅ | ✅ |
 | Apple Calendar | macOS | ✅ (on that Mac) | ✅ |
-| Apple Calendar | iOS / iPadOS | ❌ (phone ≠ this PC) | ✅ |
+| Apple Calendar | iOS / iPadOS | ❌ (see below) | ✅ snapshot only |
 | Outlook (desktop) | Windows / macOS | ✅ | ✅ |
 | Outlook.com / Microsoft 365 | web | ❌ | ✅ |
 | Google Calendar | web | ❌ | ✅ |
@@ -65,10 +65,24 @@ scope here and weakens the security model.
 **Subscribe (Apple Calendar, macOS):** *File → New Calendar Subscription →* paste
 the URL → set "Refresh every" to 30 minutes.
 
-**Import anywhere:** open `http://127.0.0.1:8787/etlab.ics` in a browser, save the
-file as `etlab.ics`, then use the app's import (Google Calendar: *Settings →
-Import & export*; Outlook: *File → Open & Export → Import an iCalendar*; iOS:
-*Settings → Calendar → Accounts → Add Account → Other → Add Subscribed Calendar*).
+**Import anywhere:** open `http://127.0.0.1:8787/etlab.ics` in a browser **on this
+computer**, save it as `etlab.ics`, then import that file where you want it:
+
+| Where | How |
+| --- | --- |
+| Google Calendar (web) | *Settings → Import & export* |
+| Outlook (desktop) | *File → Open & Export → Import an iCalendar (.ics)* |
+| Apple Calendar (macOS) | *File → Import* |
+| GNOME / KDE | open the file, or *Import* in the calendar app |
+
+**Phones cannot subscribe to this feed.** `127.0.0.1` always means *the device you
+are holding*, so on a phone that address is the phone itself — there is nothing
+listening there, and iOS's *Add Subscribed Calendar* screen will just fail. Send
+the `.ics` file across (AirDrop, Files, email, Drive), tap it, choose **Add All**,
+and iOS imports it as a **snapshot**: it stays readable forever but never updates
+on its own. Re-import a fresh file when you want current events. A live feed on a
+phone would need a tunnel exposing this server, which defeats the security model
+and is deliberately out of scope.
 
 ---
 

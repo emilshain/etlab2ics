@@ -121,6 +121,7 @@ try {
     const res = await fetch(base + '/api/status');
     const body = await res.json();
     assert.equal(body.connected, false);
+    assert.equal(body.savedAt, null);
     assert.equal(body.events, 0);
   });
 

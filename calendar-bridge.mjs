@@ -179,8 +179,14 @@ function send(res, status, body, type = 'text/plain; charset=utf-8', extra = {})
 
 function statusPage() {
   const connected = !!(state.session && state.session.token);
+  const saved = state.session && state.session.savedAt;
+  const ageDays = saved ? Math.floor((Date.now() - new Date(saved).getTime()) / 86400000) : null;
   const rows = [
     ['Connected', connected ? 'yes' : 'no'],
+    [
+      'Session saved',
+      saved ? `${new Date(saved).toLocaleString()} (${ageDays} day${ageDays === 1 ? '' : 's'} ago)` : 'never'
+    ],
     ['Events', String(state.events.length)],
     ['Last refresh', state.lastRefresh ? state.lastRefresh.toLocaleString() : 'never'],
     ['Last error', state.lastError || 'none']
@@ -334,6 +340,7 @@ async function handle(req, res) {
       200,
       JSON.stringify({
         connected: !!(state.session && state.session.token),
+        savedAt: (state.session && state.session.savedAt) || null,
         events: state.events.length,
         lastRefresh: state.lastRefresh,
         lastError: state.lastError
