@@ -1,3 +1,4 @@
+# Dependencies
 node_modules/
 npm-debug.log*
 
@@ -7,7 +8,33 @@ npm-debug.log*
 .bridge.log
 .bridge.log.old
 
-# Local browser profile used by the optional dev scripts.
+# Logs
+*.log
+
+# Secrets and local state - never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.token
+*.secret
+*.crt
+
+# Backups and archives
+*.tgz
+*.zip
+.backups/
+
+# Local browser profile used by the optional dev scripts
 .tmp-cal/
 .cal-profile/
 .edge.pid
+
+# Tool and OS noise
+.freebuff/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
